@@ -1,0 +1,148 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "machine_shape": "hm",
+      "authorship_tag": "ABX9TyMIOQua7wIAp3kfKYzS55uB",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/lee191/LSTM/blob/main/data\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "r4s9G7dCmBy1"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 22,
+      "metadata": {
+        "id": "KHGe6WICGYHh",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "f8de32af-f3bc-4fad-94cc-796544ac5ddc"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "<ipython-input-22-f06be51c2cea>:27: DtypeWarning: Columns (0,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40) have mixed types. Specify dtype option on import or set low_memory=False.\n",
+            "  df1 = pd.read_csv(PATH, names=column_names)\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "duration                       0\n",
+              "protocol_type                  0\n",
+              "service                        0\n",
+              "flag                           0\n",
+              "src_bytes                      0\n",
+              "dst_bytes                      0\n",
+              "land                           0\n",
+              "wrong_fragment                 0\n",
+              "urgent                         0\n",
+              "hot                            0\n",
+              "num_failed_logins              0\n",
+              "logged_in                      0\n",
+              "num_compromised                0\n",
+              "root_shell                     0\n",
+              "su_attempted                   0\n",
+              "num_root                       0\n",
+              "num_file_creations             0\n",
+              "num_shells                     0\n",
+              "num_access_files               0\n",
+              "num_outbound_cmds              0\n",
+              "is_host_login                  0\n",
+              "is_guest_login                 0\n",
+              "count                          0\n",
+              "srv_count                      0\n",
+              "serror_rate                    0\n",
+              "srv_serror_rate                0\n",
+              "rerror_rate                    0\n",
+              "srv_rerror_rate                0\n",
+              "same_srv_rate                  0\n",
+              "diff_srv_rate                  0\n",
+              "srv_diff_host_rate             0\n",
+              "dst_host_count                 0\n",
+              "dst_host_srv_count             0\n",
+              "dst_host_same_srv_rate         0\n",
+              "dst_host_diff_srv_rate         0\n",
+              "dst_host_same_src_port_rate    0\n",
+              "dst_host_srv_diff_host_rate    0\n",
+              "dst_host_serror_rate           0\n",
+              "dst_host_srv_serror_rate       0\n",
+              "dst_host_rerror_rate           0\n",
+              "dst_host_srv_rerror_rate       0\n",
+              "label                          0\n",
+              "dtype: int64"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 22
+        }
+      ],
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.ensemble import RandomForestClassifier\n",
+        "from sklearn.feature_selection import RFE\n",
+        "from sklearn.cluster import KMeans\n",
+        "import eli5\n",
+        "from eli5.sklearn import PermutationImportance\n",
+        "\n",
+        "# KDD 데이터셋을 읽어옵니다. 파일 경로는 실제 데이터셋 파일에 맞게 수정하세요.\n",
+        "PATH = \"data/dos_data.csv\"\n",
+        "\n",
+        "# 컬럼 이름을 직접 지정합니다.\n",
+        "column_names = [\n",
+        "    'duration', 'protocol_type', 'service', 'flag', 'src_bytes', 'dst_bytes',\n",
+        "    'land', 'wrong_fragment', 'urgent', 'hot', 'num_failed_logins',\n",
+        "    'logged_in', 'num_compromised', 'root_shell', 'su_attempted',\n",
+        "    'num_root', 'num_file_creations', 'num_shells', 'num_access_files',\n",
+        "    'num_outbound_cmds', 'is_host_login', 'is_guest_login', 'count',\n",
+        "    'srv_count', 'serror_rate', 'srv_serror_rate', 'rerror_rate',\n",
+        "    'srv_rerror_rate', 'same_srv_rate', 'diff_srv_rate', 'srv_diff_host_rate',\n",
+        "    'dst_host_count', 'dst_host_srv_count', 'dst_host_same_srv_rate',\n",
+        "    'dst_host_diff_srv_rate', 'dst_host_same_src_port_rate',\n",
+        "    'dst_host_srv_diff_host_rate', 'dst_host_serror_rate',\n",
+        "    'dst_host_srv_serror_rate', 'dst_host_rerror_rate', 'dst_host_srv_rerror_rate',\n",
+        "    'label'\n",
+        "]\n",
+        "\n",
+        "df1 = pd.read_csv(PATH, names=column_names)\n",
+        "df2 = pd.read_csv(\"data/dostest_data.csv\", names=column_names)\n",
+        "\n",
+        "newdf = pd.concat([df1,df2], ignore_index=True)\n",
+        "newdf.isnull().sum()\n",
+        "\n",
+        "\n"
+      ]
+    }
+  ]
+}
